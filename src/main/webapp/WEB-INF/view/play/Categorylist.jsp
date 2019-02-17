@@ -47,7 +47,14 @@
 				success : function(result) {
 					var obj=jQuery.parseJSON(result);
 					$.each(obj, function(key, value) {
-						console.log(key+"  "+value);
+						//console.log(key+"  "+value);
+						$.each(value,function(k,v){
+							console.log(v+" s");
+							$.each(v,function(a,b){
+								console.log(b+" b");
+							})
+							
+						});
 					});
 
 				},
