@@ -6,35 +6,51 @@ import java.util.List;
 public class QuizResponse {
 
 	private String q;
-	private List<String> a=new ArrayList<String>();
 	private String correct;
+	private List<OptionResponse> optionResponse = new ArrayList<OptionResponse>();
+
+
 	public String getQ() {
 		return q;
 	}
+
 	public void setQ(String q) {
 		this.q = q;
 	}
-	public List<String> getA() {
-		return a;
-	}
-	public void setA(List<String> a) {
-		this.a = a;
-	}
+
 	public String getCorrect() {
 		return correct;
 	}
+
 	public void setCorrect(String correct) {
 		this.correct = correct;
 	}
-	public QuizResponse(String q, List<String> a, String correct) {
+
+	public List<OptionResponse> getOptionResponse() {
+		return optionResponse;
+	}
+
+	public void setOptionResponse(List<OptionResponse> optionResponse) {
+		this.optionResponse = optionResponse;
+	}
+
+	
+	public QuizResponse(String q, List<OptionResponse> optionResponse, String correct) {
 		super();
 		this.q = q;
-		this.a = a;
 		this.correct = correct;
+		this.optionResponse = optionResponse;
 	}
+
 	public QuizResponse() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+	@Override
+	public String toString() {
+		return "QuizResponse [q=" + q + ", correct=" + correct + ", optionResponse=" + optionResponse + "]";
+	}
 	
+
 }

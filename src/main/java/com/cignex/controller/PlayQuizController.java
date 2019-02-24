@@ -1,7 +1,9 @@
 package com.cignex.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cignex.model.OptionResponse;
 import com.cignex.model.Question;
 import com.cignex.model.QuestionCategory;
 import com.cignex.model.QuizResponse;
@@ -36,34 +39,42 @@ public class PlayQuizController {
 	}
 
 	@GetMapping("/get")
-	private String play(@RequestParam int id) throws JsonProcessingException {
+	private List<QuizResponse> play(@RequestParam int id) throws JsonProcessingException {
 		List<Question> question = questionService.getQuestionByCategory(id);
-		System.out.println(question.size());
-		List<String> ans=null;
-		String ques=null;
-		String ca=null;
+		String ques = null;
+		String ca = null;
 		List<QuizResponse> quizResponse = new ArrayList<>();
-		for(Question q:question) {
-			ans=new ArrayList<>();
-			ques=q.getTitle();
-			ans.add(q.getAnswer1());
-			ans.add(q.getAnswer2());
-			ans.add(q.getAnswer3());
-			ans.add(q.getAnswer4());
-			ca=q.getCorrectAnswer();
-			quizResponse.add(new QuizResponse(ques, ans, ca));
-			System.out.println(quizResponse.size());
+		List<OptionResponse> opResponse = null;
+		OptionResponse optionResponse = null;
+		int totalQuestion = 0;
+		for (Question q : question) {
+			String coorect = "false";
+			String coorect2 = "false";
+			String coorect3 = "false";
+			String coorect4 = "false";
+			optionResponse = new OptionResponse();
+			opResponse = new ArrayList<OptionResponse>();
+			ques = q.getTitle();
+			if (q.getCorrectAnswer().equals(q.getAnswer1())) {
+				coorect = "true";
+			} else if (q.getCorrectAnswer().equals(q.getAnswer2())) {
+				coorect2 = "true";
+			} else if (q.getCorrectAnswer().equals(q.getAnswer3())) {
+				coorect3 = "true";
+			} else if (q.getCorrectAnswer().equals(q.getAnswer4())) {
+				coorect4 = "true";
+			} else {
+				System.out.println("try  " + coorect);
+			}
+			opResponse.add(new OptionResponse(q.getAnswer1(), coorect));
+			opResponse.add(new OptionResponse(q.getAnswer2(), coorect2));
+			opResponse.add(new OptionResponse(q.getAnswer3(), coorect3));
+			opResponse.add(new OptionResponse(q.getAnswer4(), coorect4));
+			ca = q.getCorrectAnswer();
+			totalQuestion++;
+			quizResponse.add(new QuizResponse(ques, opResponse, ca));
 		}
-		/*
-		 * Map<Integer, List<Answer>> map = new HashMap<>(); int i = 1; for (Question q
-		 * : question) { map.put(i, answerService.getQuestionsByid(q.getId())); i++; }
-		 * map.forEach((key, val) -> { System.out.print(key + " "); val.forEach(a -> {
-		 * System.out.println(a); }); });
-		 */
-		ObjectMapper mapper = new ObjectMapper();
-		String json = "";
-		json = mapper.writeValueAsString(quizResponse);
-		return json;
+		return quizResponse;
 	}
 
 	@GetMapping("/test")

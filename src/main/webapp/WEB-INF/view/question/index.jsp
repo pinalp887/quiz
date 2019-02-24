@@ -46,12 +46,12 @@
 				<td>Question :</td>
 				<td><input name="title" id="title" /></td>
 			</tr>
-			<tr id="ans1" class="ans">
+			<tr id="ans" class="ans">
 				<td>Answer 1 :</td>
 				<td><input name="answer1" id="answer1" class="a" /></td>
-			<!-- 	<td><button type="button" class="new" id="new">+</button></td> -->
+				<!-- <td><button type="button" class="new" id="new">+</button></td> --> 
 			</tr>
-			<tr id="ans2" class="ans">
+			 <tr id="ans2" class="ans">
 				<td>Answer 2:</td>
 				<td><input name="answer2" id="answer2" class="a" /></td>
 				<!-- <td><button type="button" class="new" id="new">+</button></td> -->
@@ -59,7 +59,7 @@
 			<tr id="ans3" class="ans">
 				<td>Answer 3 :</td>
 				<td><input name="answer3" id="answer3" class="a" /></td>
-				<!-- <td><button type="button" class="new" id="new">+</button></td> -->
+			<!-- 	<td><button type="button" class="new" id="new">+</button></td> -->
 			</tr>
 			<tr id="ans4" class="ans">
 				<td>Answer 4 :</td>
@@ -102,7 +102,7 @@
 			
 			if (count <= 4) {
 				div.html("<td> Answer " + count + ":</td><td><input name='answer"+count+"' class='a"+count+"' id='answer"+count+"'></td><td><button type='button' id='remove"+count+"'>-</button></td>");
-				$('#ans'+count).append(div);
+				$('#ans').append(div);
 				count++;
 			} else {
 				alert("you can generate maximum 4 text boxes");
@@ -183,8 +183,12 @@
 		}
 
 		function reset() {
-			name: $('#questions').val("");
+			title : $('#title').val("");
 		correctAnswer:$('#correctAnswer').val("");
+		answer2:$('#answer2').val("");
+		answer2:$('#answer2').val("");
+		answer3:$('#answer3').val("");
+		answer4:$('#answer4').val("");
 		}
 	});
 </script>

@@ -12,12 +12,6 @@
 <body>
 	<h1 align="center">Please Select the category</h1>
 
-	<%-- <c:forEach items="${list }" var="l">
-	${l.name }
-	
-	<c:url value="/play/get/${l.id}" var="getId"></c:url>
-	<a href="${getId }">SELECT</a>
-</c:forEach> --%>
 	<div id="res"></div>
 	<div>
 		<select id="id">
@@ -30,32 +24,36 @@
 	</div>
 	<button name="get" id="get">get</button>
 	<button name="play" id="play">Play</button>
-	
-	<div id="p"></div>
+	<button name="result" id="result">Result</button>
+	<div id="quizArea">
+	</div>
+	<div id="results">
+	</div>
 </body>
 
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#get").click(function(event) {
 			event.preventDefault();
-				getAll();
+			getAll();
 			//getdata();
 		});
-		var v=null;
+		var v = null;
 		$('#id').change(function() {
-			 v = $(this).val();
+			v = $(this).val();
 		});
-		var jsonString=null;
+		var jsonString = null;
 		function getAll() {
-			var formData={
-					id:v,
+			var formData = {
+				id : v,
 			}
 			$.ajax({
 				type : 'GET',
-				url : '/play/get?id='+formData.id,
+				url : '/play/get?id=' + formData.id,
 				contentType : "application/json;charset=utf-8",
 				success : function(result) {
-					jsonString=$.parseJSON(result);
+					jsonString = result;
+					setUpQuiz();
 				},
 				error : function(e) {
 					$('#res').html("<strong>Errrorr</strong>");
@@ -65,34 +63,102 @@
 		}
 		$("#play").click(function(event) {
 			event.preventDefault();
-				play();
-			//getdata();
+			playQuiz();
 		});
-		function play(){
-			var count=1;
-			$.each(jsonString,function(k,v){
-				var quiz=$("<div class='s"+count+"'>");
-				quiz.html("<ul><li>"+v.q+"</li>");
-				$('#p').append(quiz);
-				var ans=v.a;
-				for(i in ans){
-				//	if(ans.hasOwnProperty(i)){
-						console.log(ans[i]);
-						//quiz.html("<li><input type='radio' name='option"+i+"' id='option"+i+"'>"+ans[i]+"</li>");
-						//$('#p').append(quiz);
-				//	}
+		function setUpQuiz() {
+			var count = 1; 
+			var totalQuestions=1;
+			var totalQuestionHtml=$('<div class="q'+count+'">Question <span class="current">'+count+'</span> of<span>'+totalQuestions+'</span>');
+			$.each(jsonString, function(k, v) {
+				var create=$('<div id="p'+count+'">');
+				$("#quizArea").append(create);
+				if(count > 1){
+					$('#p'+count).hide();
 				}
-				//quiz.html("<button>next</button>");
-				//$('#p').append(quiz);
-				/* $.each(v,function(c,b){
-					//console.log(b+" "+a);
-					var quiz=$("<tr>");
-					quiz.html("<td>"+b+"</td>");
-					$('#p').append(quiz);
-					
-				}); */
+			
+				var questionHtml=$('<li class="question'+count+'" id="question'+count+'"></li>');
+				questionHtml.append('<div class="q'+count+'">Question <span class="current">'+count+'</span> of<span>'+totalQuestions+'</span>');
+						questionHtml.append('<h3>'+count+'.'+v.q+'</h3>');
+						$('#p'+count).append(questionHtml);
+				
+				var ans = v.optionResponse;
+				var answerHTML = $('<ul class="answer"></ul>');
+				for (i in ans) {
+					if (ans.hasOwnProperty(i)) {
+						answer=ans[i];
+						var input='<input id="answer'+count+'" name="answer'+count+'" type="radio" class="answerr" value='+answer.correct+'>';
+						var label='<label for="answer'+count+'">' + answer.option + '</label>';
+						
+						var answerContent=$('<li></li>').append(input).append(label);
+						answerHTML.append(answerContent);
+						$('#p'+count).append(answerHTML);
+					}	
+				}
+				count++;
+				totalQuestions++;
+			});
+			var nextButton='<input type="submit" id="next" value="Next">';
+			var previousButton='<input type="submit" id="previous" value="Previous">';
+			$('#quizArea').append(previousButton);
+			$('#quizArea').append(nextButton);
+			$('#previous').hide();
+		}
+		
+		var map = new Map(); 
+		var playCount=1;
+		function playQuiz(){
+			
+			$('.answerr').change(function(){
+				//alert($(this).val());
+				
+				var q=playCount;
+					var ans=$(this).val();
+				map.set(q,ans);
+				//console.log(map);
+			});
+			$('#next').click(function(){
+				//alert(playCount);
+				$('#p'+playCount).fadeOut(300);
+				
+				playCount++;
+				$('#p'+playCount).fadeIn(500);
+				
+				if(playCount > 1){
+					$('#previous').show();
+				}
+			});
+			$('#previous').click(function(){
+				$('#p'+playCount).fadeOut(300);
+				
+				playCount--;
+				$('#p'+playCount).fadeIn(500);
+				if(playCount <= 1){
+					$('#previous').hide();
+				}
 			});
 		}
+		var results=0;
+		var trueCount=0;
+		var falseCount=0;
+		function result(){
+			for(const [key,value] of map.entries()){
+				if(value=="true"){
+					trueCount++;
+				}else{
+					falseCount++;
+				}
+				results++;
+			}
+			var resultCreate='<h3> correct Answers are '+trueCount+' out of '+results+'</h3>';
+			$('#results').append(resultCreate);
+			console.log(falseCount+" false "+ trueCount+" true");
+		}
+		
+		$('#result').click(function(){
+			event.preventDefault();
+			result();
+		});
+		
 	});
 </script>
 </html>
