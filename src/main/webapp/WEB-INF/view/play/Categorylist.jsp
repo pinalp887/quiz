@@ -22,7 +22,7 @@
 			</c:forEach>
 		</select>
 	</div>
-	<button name="get" id="get">get</button>
+	<!-- <button name="get" id="get">get</button> -->
 	<button name="play" id="play">Play</button>
 	<button name="result" id="result">Result</button>
 	<div id="quizArea">
@@ -33,14 +33,19 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
+		$("#play").hide();
 		$("#get").click(function(event) {
 			event.preventDefault();
-			getAll();
+			//getAll();
 			//getdata();
 		});
 		var v = null;
 		$('#id').change(function() {
 			v = $(this).val();
+			getAll();
+			$("#play").show(function(){
+				$("#play").css("color","red");
+			});
 		});
 		var jsonString = null;
 		function getAll() {
@@ -79,6 +84,7 @@
 				var questionHtml=$('<li class="question'+count+'" id="question'+count+'"></li>');
 				questionHtml.append('<div class="q'+count+'">Question <span class="current">'+count+'</span> of<span>'+totalQuestions+'</span>');
 						questionHtml.append('<h3>'+count+'.'+v.q+'</h3>');
+						questionHtml.append('<h6 hidden>'+v.correct+'</h6>');
 						$('#p'+count).append(questionHtml);
 				
 				var ans = v.optionResponse;
@@ -89,7 +95,7 @@
 						var input='<input id="answer'+count+'" name="answer'+count+'" type="radio" class="answerr" value='+answer.correct+'>';
 						var label='<label for="answer'+count+'">' + answer.option + '</label>';
 						
-						var answerContent=$('<li></li>').append(input).append(label);
+						var answerContent=$('<div></div>').append(input).append(label);
 						answerHTML.append(answerContent);
 						$('#p'+count).append(answerHTML);
 					}	
@@ -106,6 +112,8 @@
 		
 		var map = new Map(); 
 		var playCount=1;
+		var q=0;
+		var resultResponseArray=[];
 		function playQuiz(){
 			
 			$('.answerr').change(function(){
@@ -119,8 +127,13 @@
 			$('#next').click(function(){
 				//alert(playCount);
 				$('#p'+playCount).fadeOut(300);
-				
+				var qu=$(this).parent().find('h3')[q];
+				var ar=$(this).parent().find('ul.answer')[q];
+				var t=$(this).parent().find('h6')[q].textContent;
+				var res={"question":qu,"answers":ar,"correct":t};
+				resultResponseArray.push(res);
 				playCount++;
+				q++;
 				$('#p'+playCount).fadeIn(500);
 				
 				if(playCount > 1){
@@ -129,7 +142,7 @@
 			});
 			$('#previous').click(function(){
 				$('#p'+playCount).fadeOut(300);
-				
+				resultResponseArray.splice(resultResponseArray.length-1);
 				playCount--;
 				$('#p'+playCount).fadeIn(500);
 				if(playCount <= 1){
@@ -151,7 +164,14 @@
 			}
 			var resultCreate='<h3> correct Answers are '+trueCount+' out of '+results+'</h3>';
 			$('#results').append(resultCreate);
-			console.log(falseCount+" false "+ trueCount+" true");
+			$.each(resultResponseArray,function(key,value){
+				
+				$('#quizArea').hide();
+				$('#results').append(value.question);
+				$('#results').append(value.answers);
+				$('#results').append(value.correct);
+				console.log(value.answers);
+			});
 		}
 		
 		$('#result').click(function(){

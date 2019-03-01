@@ -184,7 +184,8 @@
 
 		function reset() {
 			title : $('#title').val("");
-		correctAnswer:$('#correctAnswer').val("");
+		correctAnswer:$('#correctAnswer').html("");
+		answer1:$('#answer1').val("");
 		answer2:$('#answer2').val("");
 		answer2:$('#answer2').val("");
 		answer3:$('#answer3').val("");
