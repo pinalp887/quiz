@@ -59,12 +59,12 @@
 			<tr id="ans3" class="ans">
 				<td>Answer 3 :</td>
 				<td><input name="answer3" id="answer3" class="a" /></td>
-			<!-- 	<td><button type="button" class="new" id="new">+</button></td> -->
+			 	<td><button type="button" class="new" id="new3">-</button></td> 
 			</tr>
 			<tr id="ans4" class="ans">
 				<td>Answer 4 :</td>
 				<td><input name="answer4" id="answer4" class="a" /></td>
-			<!-- 	<td><button type="button" class="new" id="new">+</button></td> -->
+			 	<td><button type="button" class="new" id="new4">-</button></td> 
 			</tr>
 
 			<tr>
@@ -86,6 +86,12 @@
 	$(document).ready(function() {
 		$('#saveForm').click(function(event) {
 			event.preventDefault();
+		});
+		$('#new3').click(function(){
+			$('#ans3').hide();
+		});
+		$('#new4').click(function(){
+			$('#ans4').hide();
 		});
 		 $(function () {
 	            $("#btnAdd").click(function () {

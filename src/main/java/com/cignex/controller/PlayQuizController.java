@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cignex.model.OptionResponse;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/play")
+@SessionAttributes({"name"})
 public class PlayQuizController {
 	@Autowired
 	private QuestionCategoryService questionCategoryService;
@@ -59,17 +61,25 @@ public class PlayQuizController {
 				coorect = "true";
 			} else if (q.getCorrectAnswer().equals(q.getAnswer2())) {
 				coorect2 = "true";
-			} else if (q.getCorrectAnswer().equals(q.getAnswer3())) {
-				coorect3 = "true";
-			} else if (q.getCorrectAnswer().equals(q.getAnswer4())) {
-				coorect4 = "true";
 			} else {
-				System.out.println("try  " + coorect);
+				System.out.println("try  ");
 			}
 			opResponse.add(new OptionResponse(q.getAnswer1(), coorect));
 			opResponse.add(new OptionResponse(q.getAnswer2(), coorect2));
-			opResponse.add(new OptionResponse(q.getAnswer3(), coorect3));
-			opResponse.add(new OptionResponse(q.getAnswer4(), coorect4));
+			if (!q.getAnswer3().equals("")) {
+				if (q.getCorrectAnswer().equals(q.getAnswer3())) {
+					coorect3 = "true";
+				} else if (q.getCorrectAnswer().equals(q.getAnswer4())) {
+					coorect4 = "true";
+				} else {
+					System.out.println("try  ");
+				}
+				opResponse.add(new OptionResponse(q.getAnswer3(), coorect3));
+				opResponse.add(new OptionResponse(q.getAnswer4(), coorect4));
+			}
+
+			
+			
 			ca = q.getCorrectAnswer();
 			totalQuestion++;
 			quizResponse.add(new QuizResponse(ques, opResponse, ca));

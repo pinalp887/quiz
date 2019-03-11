@@ -10,7 +10,7 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-	<h1 align="center">Please Select the category</h1>
+	<h1 align="center">Please Select the category ${name }</h1>
 
 	<div id="res"></div>
 	<div>
@@ -22,21 +22,21 @@
 			</c:forEach>
 		</select>
 	</div>
-	<!-- <button name="get" id="get">get</button> -->
 	<button name="play" id="play">Play</button>
 	<button name="result" id="result">Result</button>
-	<div id="quizArea">
-	</div>
-	<div id="results">
-	</div>
+	<div id="quizArea"></div>
+	<div id="results"></div>
+
 </body>
 
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#play").hide();
+		$("#get").hide();
+		
 		$("#get").click(function(event) {
 			event.preventDefault();
-			//getAll();
+			getAll();
 			//getdata();
 		});
 		var v = null;
@@ -66,14 +66,20 @@
 				}
 			});
 		}
+		 var timeCount=0;
 		$("#play").click(function(event) {
 			event.preventDefault();
 			playQuiz();
+			$('#id').hide();
+			$('#play').hide();
 		});
+		function timeCounter(){
+			
+		} 
 		function setUpQuiz() {
 			var count = 1; 
 			var totalQuestions=1;
-			var totalQuestionHtml=$('<div class="q'+count+'">Question <span class="current">'+count+'</span> of<span>'+totalQuestions+'</span>');
+			
 			$.each(jsonString, function(k, v) {
 				var create=$('<div id="p'+count+'">');
 				$("#quizArea").append(create);
@@ -82,8 +88,8 @@
 				}
 			
 				var questionHtml=$('<li class="question'+count+'" id="question'+count+'"></li>');
-				questionHtml.append('<div class="q'+count+'">Question <span class="current">'+count+'</span> of<span>'+totalQuestions+'</span>');
-						questionHtml.append('<h3>'+count+'.'+v.q+'</h3>');
+				//questionHtml.append('<div class="q'+count+'">Question <span class="current">'+count+'</span> of<span>'+totalQuestions+'</span>');
+						questionHtml.append('<h3>'+count+'.'+v.q+  '<span id="theTarget'+count+'" style="margin-left:15px;">  30</span> </h3>');
 						questionHtml.append('<h6 hidden>'+v.correct+'</h6>');
 						$('#p'+count).append(questionHtml);
 				
@@ -98,13 +104,16 @@
 						var answerContent=$('<div></div>').append(input).append(label);
 						answerHTML.append(answerContent);
 						$('#p'+count).append(answerHTML);
-					}	
+					}
 				}
 				count++;
 				totalQuestions++;
 			});
+		
 			var nextButton='<input type="submit" id="next" value="Next">';
 			var previousButton='<input type="submit" id="previous" value="Previous">';
+			var totalQuestionHtml=$('<div class="q"> of<span>'+totalQuestions+'</span></div>');
+			//$('#quizArea').append(totalQuestionHtml);
 			$('#quizArea').append(previousButton);
 			$('#quizArea').append(nextButton);
 			$('#previous').hide();
@@ -115,26 +124,34 @@
 		var q=0;
 		var resultResponseArray=[];
 		function playQuiz(){
-			
+			var timer = setInterval(function() {
+			     timeCount = parseInt($('#theTarget'+playCount).html());
+			    if (timeCount !== 0) {
+			      $('#theTarget'+playCount).html(timeCount - 1);
+			    } else {
+			      clearInterval(timer);
+			    }
+			  }, 1000);
 			$('.answerr').change(function(){
-				//alert($(this).val());
-				
 				var q=playCount;
-					var ans=$(this).val();
+				var ans=$(this).val();
 				map.set(q,ans);
-				//console.log(map);
 			});
+			window.setInterval(function(){
+			 $("#next").trigger('click');
+			}, 30000);
 			$('#next').click(function(){
-				//alert(playCount);
-				$('#p'+playCount).fadeOut(300);
-				var qu=$(this).parent().find('h3')[q];
-				var ar=$(this).parent().find('ul.answer')[q];
-				var t=$(this).parent().find('h6')[q].textContent;
-				var res={"question":qu,"answers":ar,"correct":t};
-				resultResponseArray.push(res);
+					$('#p'+playCount).fadeOut(100,function(){
+					var qu=$(this).parent().find('h3')[q];
+					var ar=$(this).parent().find('ul.answer')[q];
+					var t=$(this).parent().find('h6')[q].textContent;
+					var res={"question":qu,"answers":ar,"correct":t};
+					resultResponseArray.push(res);
+					q++;
+				});
+				
 				playCount++;
-				q++;
-				$('#p'+playCount).fadeIn(500);
+				$('#p'+playCount).fadeIn(1000);
 				
 				if(playCount > 1){
 					$('#previous').show();
@@ -142,7 +159,7 @@
 			});
 			$('#previous').click(function(){
 				$('#p'+playCount).fadeOut(300);
-				resultResponseArray.splice(resultResponseArray.length-1);
+			//	resultResponseArray.splice(resultResponseArray.length-1);
 				playCount--;
 				$('#p'+playCount).fadeIn(500);
 				if(playCount <= 1){
@@ -150,9 +167,14 @@
 				}
 			});
 		}
-		var results=0;
+		
+		
+		
 		var trueCount=0;
 		var falseCount=0;
+		var qq=1;
+		var t=0;
+		var sumOfTotalTimeTaken=0;
 		function result(){
 			for(const [key,value] of map.entries()){
 				if(value=="true"){
@@ -160,18 +182,34 @@
 				}else{
 					falseCount++;
 				}
-				results++;
 			}
-			var resultCreate='<h3> correct Answers are '+trueCount+' out of '+results+'</h3>';
+			var resultCreate='<h3> correct Answers are '+trueCount+' out of '+q+'</h3>';
+			
 			$('#results').append(resultCreate);
 			$.each(resultResponseArray,function(key,value){
 				
 				$('#quizArea').hide();
-				$('#results').append(value.question);
-				$('#results').append(value.answers);
-				$('#results').append(value.correct);
-				console.log(value.answers);
+				var create=$('<div id="r'+qq+'">');
+				create.append(value.question);
+				create.append(value.answers);
+				create.append("Correct Answer is<div id='c"+qq+"'><span ><b>"+value.correct+"</b></span></div>");
+				$('#results').append(create);
+				var q1=$('#theTarget'+qq).html();
+				sumOfTotalTimeTaken +=parseInt(q1);
+				for(i=0;i<4;i++){
+					var selected=$('input[name=answer'+qq+']:checked').val();
+					$("input[type=radio]").attr('disabled', true);
+					if(selected=="false"){
+						$('input[name=answer'+qq+']:checked').next().css("color", "red");
+					}if(selected=="true"){
+						$('input[name=answer'+qq+']:checked').next().css("color", "green");
+					}
+				}
+				t=qq*30;
+				qq++;
 			});
+			console.log(sumOfTotalTimeTaken+" final");
+			console.log(t);
 		}
 		
 		$('#result').click(function(){
@@ -181,4 +219,5 @@
 		
 	});
 </script>
+
 </html>
