@@ -10,17 +10,23 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-	<h1 align="center">Please Select the category ${name }</h1>
 
+	<h1 align="center">Please Select the category ${name }</h1>
+	<input type="hidden" type="text" id="name" value="${name }">
+	<input type="hidden" type="text" id="u_id" value="${id }">
 	<div id="res"></div>
 	<div>
-		<select id="id">
-			<option>--</option>
-			<c:forEach items="${list }" var="l">
+		<table>
+			<tr>
+				<td>Select any :</td>
+				<td><select id="id">
+						<option>--</option>
+						<c:forEach items="${list }" var="l">
 
-				<option value="${l.id }">${l.name }</option>
-			</c:forEach>
-		</select>
+							<option value="${l.id }">${l.name }</option>
+						</c:forEach>
+				</select></td>
+		</table>
 	</div>
 	<button name="play" id="play">Play</button>
 	<button name="result" id="result">Result</button>
@@ -31,11 +37,12 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
+		var name=$("#name").val();
+		var u_id=$("#u_id").val();
 		$("#play").hide();
 		$("#get").hide();
-		
+		$("#result").hide();
 		$("#get").click(function(event) {
-			event.preventDefault();
 			getAll();
 			//getdata();
 		});
@@ -76,10 +83,11 @@
 		function timeCounter(){
 			
 		} 
+		var totalQuestions=0;
 		function setUpQuiz() {
 			var count = 1; 
-			var totalQuestions=1;
-			
+		
+			 totalQuestions=jsonString.length;
 			$.each(jsonString, function(k, v) {
 				var create=$('<div id="p'+count+'">');
 				$("#quizArea").append(create);
@@ -88,7 +96,7 @@
 				}
 			
 				var questionHtml=$('<li class="question'+count+'" id="question'+count+'"></li>');
-				//questionHtml.append('<div class="q'+count+'">Question <span class="current">'+count+'</span> of<span>'+totalQuestions+'</span>');
+				questionHtml.append('<div class="q'+count+'">Question <span class="current">'+count+'</span> of  <span>'+totalQuestions+'</span>');
 						questionHtml.append('<h3>'+count+'.'+v.q+  '<span id="theTarget'+count+'" style="margin-left:15px;">  30</span> </h3>');
 						questionHtml.append('<h6 hidden>'+v.correct+'</h6>');
 						$('#p'+count).append(questionHtml);
@@ -107,13 +115,10 @@
 					}
 				}
 				count++;
-				totalQuestions++;
 			});
 		
 			var nextButton='<input type="submit" id="next" value="Next">';
 			var previousButton='<input type="submit" id="previous" value="Previous">';
-			var totalQuestionHtml=$('<div class="q"> of<span>'+totalQuestions+'</span></div>');
-			//$('#quizArea').append(totalQuestionHtml);
 			$('#quizArea').append(previousButton);
 			$('#quizArea').append(nextButton);
 			$('#previous').hide();
@@ -129,7 +134,7 @@
 			    if (timeCount !== 0) {
 			      $('#theTarget'+playCount).html(timeCount - 1);
 			    } else {
-			      clearInterval(timer);
+			      $("#next").trigger('click');
 			    }
 			  }, 1000);
 			$('.answerr').change(function(){
@@ -137,9 +142,11 @@
 				var ans=$(this).val();
 				map.set(q,ans);
 			});
-			window.setInterval(function(){
-			 $("#next").trigger('click');
-			}, 30000);
+			
+			/* window.setInterval(function(){
+				 $("#next").trigger('click');
+				}, 30000); */
+			clearInterval();
 			$('#next').click(function(){
 					$('#p'+playCount).fadeOut(100,function(){
 					var qu=$(this).parent().find('h3')[q];
@@ -149,12 +156,16 @@
 					resultResponseArray.push(res);
 					q++;
 				});
-				
 				playCount++;
 				$('#p'+playCount).fadeIn(1000);
 				
 				if(playCount > 1){
 					$('#previous').show();
+					
+				}
+				if(playCount == totalQuestions){
+					$("#next").hide();
+					$('#result').show();
 				}
 			});
 			$('#previous').click(function(){
@@ -165,16 +176,16 @@
 				if(playCount <= 1){
 					$('#previous').hide();
 				}
+				q--;
 			});
 		}
-		
-		
 		
 		var trueCount=0;
 		var falseCount=0;
 		var qq=1;
 		var t=0;
 		var sumOfTotalTimeTaken=0;
+		var tTime=0;
 		function result(){
 			for(const [key,value] of map.entries()){
 				if(value=="true"){
@@ -207,13 +218,15 @@
 				}
 				t=qq*30;
 				qq++;
+				
 			});
-			console.log(sumOfTotalTimeTaken+" final");
-			console.log(t);
+			 tTime=t - sumOfTotalTimeTaken;
+			 console.log(tTime);
 		}
 		
+		
+		
 		$('#result').click(function(){
-			event.preventDefault();
 			result();
 		});
 		

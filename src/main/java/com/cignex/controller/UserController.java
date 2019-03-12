@@ -21,7 +21,7 @@ import com.cignex.service.UserService;
 
 @RestController
 @RequestMapping("/user")
-@SessionAttributes({"name"})
+@SessionAttributes({"name","id"})
 public class UserController {
 	@Autowired
 	private UserService userService;
@@ -42,6 +42,8 @@ public class UserController {
 	private ModelAndView loginUser(@RequestParam("email") String email,@RequestParam("password") String password,ModelAndView model) {
 		User user=userService.login(email, password);
 		model.addObject("name", user.getFirstName());
+		model.addObject("id", user.getId());
+		
 		model.setViewName("user/home");
 		return model;
 	}
