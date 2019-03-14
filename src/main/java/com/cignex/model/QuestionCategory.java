@@ -13,7 +13,6 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "questionCategory")
-
 public class QuestionCategory implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +20,23 @@ public class QuestionCategory implements Serializable {
 	private String name;
 	@OneToMany(mappedBy = "qcategory")
 	private List<Question> list = new ArrayList<Question>();
+	@OneToMany(mappedBy = "qcategory")
+	private List<ResultQuiz> resultQuiz=new ArrayList<ResultQuiz>();
+
+	
+	/**
+	 * @return the resultQuiz
+	 */
+	public List<ResultQuiz> getResultQuiz() {
+		return resultQuiz;
+	}
+
+	/**
+	 * @param resultQuiz the resultQuiz to set
+	 */
+	public void setResultQuiz(List<ResultQuiz> resultQuiz) {
+		this.resultQuiz = resultQuiz;
+	}
 
 	public Integer getId() {
 		return id;

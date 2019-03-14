@@ -32,7 +32,7 @@
 	<button name="result" id="result">Result</button>
 	<div id="quizArea"></div>
 	<div id="results"></div>
-
+	<div id="tRes"></div>
 </body>
 
 <script type="text/javascript">
@@ -164,8 +164,10 @@
 					
 				}
 				if(playCount == totalQuestions){
-					$("#next").hide();
+					$("#next").attr("value","submit");
 					$('#result').show();
+				}else{
+					$("#next").attr("value","next");
 				}
 			});
 			$('#previous').click(function(){
@@ -186,6 +188,9 @@
 		var t=0;
 		var sumOfTotalTimeTaken=0;
 		var tTime=0;
+		var marks=0;
+		var resultArray=[];
+		var wrongQuestion=0;
 		function result(){
 			for(const [key,value] of map.entries()){
 				if(value=="true"){
@@ -218,16 +223,59 @@
 				}
 				t=qq*30;
 				qq++;
+				wrongQuestion=totalQuestions-trueCount;
+				marks=trueCount*10;
 				
 			});
 			 tTime=t - sumOfTotalTimeTaken;
-			 console.log(tTime);
+			 /* console.log(totalQuestions+" total questions");
+			 console.log(u_id+" user id");
+			 console.log(marks+" total marks");
+			 console.log(trueCount+" right question");
+			 console.log(wrongQuestion+" wrong questions");
+			 console.log(tTime+" total time is "); */
+			 var rer=$('#results').html();
+			// $('#tRes').append(rer);
+			 resultArray.push(rer);
+			// console.log(resultArray);
 		}
 		
+		function saveResult(){
+			var formData={
+					result:resultArray,
+					totalMarks:marks,
+					totalTime:tTime,
+					totalQuestion:totalQuestions,
+					rightQuestion:trueCount,
+					wrongQuestion:wrongQuestion,
+					user:{
+						id:u_id,
+					},
+					qcategory:{
+						id:v,
+					}	
+			}
+			console.log(formData);
+			$.ajax({
+				type : "POST",
+				contentType : "application/json",
+				url : "/history/save",
+				accept : 'text/plain',
+				data : JSON.stringify(formData),
+				success : function(result) {
+					console.log(result);
+				},
+				error : function(e) {
+					alert("Error!")
+					console.log("ERROR: ", e);
+				}
+			});
+		}
 		
 		
 		$('#result').click(function(){
 			result();
+			saveResult();
 		});
 		
 	});
