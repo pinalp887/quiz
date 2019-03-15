@@ -29,7 +29,7 @@ public class QuizResultService {
 		quizResult.deleteById(id);
 	}
 	
-	public ResultQuiz getResultById(int id) {
+	public String getResultById(int id) {
 		return quizResult.getResultById(id);
 	}
 }

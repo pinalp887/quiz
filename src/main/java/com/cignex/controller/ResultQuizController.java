@@ -40,9 +40,8 @@ public class ResultQuizController {
 		return model;
 	}
 	@GetMapping("/result/{id}")
-	private ResultQuiz getResult(@PathVariable("id") int id,ModelAndView model) {
-		ResultQuiz quiz=quizResultService.getResultById(id);
-		System.out.println(id);
+	private String getResult(@PathVariable("id") int id,ModelAndView model) {
+		String quiz=quizResultService.getResultById(id);
 		return quiz;
 	}
 }

@@ -9,6 +9,6 @@ import com.cignex.model.ResultQuiz;
 
 @Repository("quizResult")
 public interface QuizResult extends JpaRepository<ResultQuiz, Integer> {
-	@Query(value = "Select s.result from ResultQuiz s where s.id= :id")
-	ResultQuiz getResultById(@Param("id") int id);
+	@Query(value = "SELECT result from ResultQuiz where id= :id")
+	String getResultById(@Param("id") int id);
 }

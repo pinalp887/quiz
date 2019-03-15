@@ -5,13 +5,12 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	
 <title>Insert title here</title>
 </head>
 <body>
-	<table border="1px">
+	<table border="1px" id="t1">
 		<tr>
 			<td>ID</td>
 			<td>User Name</td>
@@ -39,13 +38,14 @@
 			</tr>
 		</c:forEach>
 	</table>
+	
+	<div id="res"></div>
 </body>
 <script type="text/javascript">
 	$(document).ready(function() {
 		var t=0;
 		$('.c').click(function(){
 				t =$(this).val();
-				alert(t);
 				getData();
 		});
 		
@@ -55,10 +55,11 @@
 			}
 			$.ajax({
 				type : 'GET',
-				url : '/result/' + data.id,
+				url : '/history/result/' + data.id,
 				contentType : "application/json;charset=utf-8",
 				success : function(result) {
 					console.log(result);
+					$('#res').html(result);
 				},
 				error : function(e) {
 					$('#res').html("<strong>Errrorr</strong>");
